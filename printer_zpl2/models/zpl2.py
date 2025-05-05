@@ -107,7 +107,7 @@ BARCODE_QR_CODE = "qr_code"
 BARCODE_GS1_128 = "gs1_128"
 
 
-class Zpl2(object):
+class Zpl2:
     """ZPL II management class
     Allows to generate data for Zebra printers
     """
@@ -150,11 +150,11 @@ class Zpl2(object):
 
     def print_width(self, label_width):
         """Defines the print width setting on the printer"""
-        self._write_command("^PW%d" % label_width)
+        self._write_command(f"^PW{label_width}")
 
     def configuration_update(self, active_configuration):
         """Set the active configuration on the printer"""
-        self._write_command("^JU%s" % active_configuration)
+        self._write_command(f"^JU{active_configuration}")
 
     def label_start(self):
         """Adds the label start command to the buffer"""
@@ -172,13 +172,13 @@ class Zpl2(object):
 
     def label_home(self, left, top):
         """Define the label top left corner"""
-        self._write_command("^LH%d,%d" % (left, top))
+        self._write_command(f"^LH{left},{top}")
 
     def _field_origin(self, right, down):
         """Define the top left corner of the data, from the top left corner of
         the label
         """
-        return "^FO%d,%d" % (right, down)
+        return f"^FO{right},{down}"
 
     def _font_format(self, font_format):
         """Send the commands which define the font to use for the current data"""
@@ -376,11 +376,7 @@ class Zpl2(object):
 
     def _field_data(self, data):
         """Add data to the buffer, between start and stop commands"""
-        command = "{start}{data}{stop}".format(
-            start=self._field_data_start(),
-            data=data,
-            stop=self._field_data_stop(),
-        )
+        command = f"{self._field_data_start()}{data}{self._field_data_stop()}"
         return command
 
     def font_data(self, right, down, field_format, data):
@@ -391,23 +387,19 @@ class Zpl2(object):
         block = ""
         if field_format.get(ARG_IN_BLOCK, False):
             block = self._field_block(field_format)
-        command = "{origin}{font_format}{reverse}{block}{data}".format(
-            origin=self._field_origin(right, down),
-            font_format=self._font_format(field_format),
-            reverse=reverse,
-            block=block,
-            data=self._field_data(data),
-        )
+        origin = self._field_origin(right, down)
+        font = self._font_format(field_format)
+        field_data = self._field_data(data)
+        command = f"{origin}{font}{reverse}{block}{field_data}"
         self._write_command(command)
 
     def barcode_data(self, right, down, barcodeType, barcode_format, data):
         """Add a full barcode in the buffer, with needed formatting commands"""
-        command = "{default}{origin}{barcode_format}{data}".format(
-            default=self._barcode_field_default(barcode_format),
-            origin=self._field_origin(right, down),
-            barcode_format=self._barcode_format(barcodeType, barcode_format),
-            data=self._field_data(data),
-        )
+        barcode_field_default = self._barcode_field_default(barcode_format)
+        origin = self._field_origin(right, down)
+        barcode = self._barcode_format(barcodeType, barcode_format)
+        field_data = self._field_data(data)
+        command = f"{barcode_field_default}{origin}{barcode}{field_data}"
         self._write_command(command)
 
     def graphic_box(self, right, down, graphic_format):
@@ -518,16 +510,10 @@ class Zpl2(object):
         bytes_per_row = rounded_width / 8
         total_bytes = bytes_per_row * height
         graphic_image_command = (
-            "^GFA,{total_bytes},{total_bytes},{bytes_per_row},{ascii_data}".format(
-                total_bytes=total_bytes,
-                bytes_per_row=bytes_per_row,
-                ascii_data=ascii_data,
-            )
+            f"^GFA,{total_bytes},{total_bytes},{bytes_per_row},{ascii_data}"
         )
         # Generate the ZPL II command
-        command = "{origin}{data}{stop}".format(
-            origin=self._field_origin(right, down),
-            data=graphic_image_command,
-            stop=self._field_data_stop(),
-        )
+        origin = self._field_origin(right, down)
+        field_data_stop = self._field_data_stop()
+        command = f"{origin}{graphic_image_command}{field_data_stop}"
         self._write_command(command)

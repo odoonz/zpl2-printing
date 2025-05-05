@@ -8,7 +8,7 @@
     "summary": "Add a ZPL II label printing feature",
     "author": "SUBTENO-IT, FLorent de Labarre, "
     "Apertoso NV, Odoo Community Association (OCA)",
-    "website": "https://github.com/OCA/report-print-send",
+    "website": "https://github.com/odoonz/odoonz-addons",
     "license": "AGPL-3",
     "depends": ["base_report_to_printer"],
     "data": [

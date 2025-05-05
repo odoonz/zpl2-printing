@@ -128,7 +128,7 @@ class PrintingLabelZpl2(models.Model):
         page_count=1,
         label_offset_x=0,
         label_offset_y=0,
-        **extra
+        **extra,
     ):
         to_print = []
         for component in self.component_ids:
@@ -167,7 +167,7 @@ class PrintingLabelZpl2(models.Model):
             ):
                 printed_data = data
                 # Pick the right value if data is a collection
-                if isinstance(data, (list, tuple, set, models.BaseModel)):
+                if isinstance(data, list | tuple | set | models.BaseModel):
                     # If we reached the end of data, quit the loop
                     if idx >= len(data):
                         break
@@ -195,16 +195,16 @@ class PrintingLabelZpl2(models.Model):
         page_count=1,
         label_offset_x=0,
         label_offset_y=0,
-        **extra
+        **extra,
     ):
         to_print = self._get_to_data_to_print(
             record, page_number, page_count, label_offset_x, label_offset_y, **extra
         )
 
-        for (component, data, offset_x, offset_y) in to_print:
+        for component, data, offset_x, offset_y in to_print:
             getattr(
                 component,
-                "_process_type_%s" % component.component_type,
+                f"_process_type_{component.component_type}",
                 component._process_type_barcode,
             )(label_data, data, offset_x, offset_y, record)
 
@@ -227,7 +227,7 @@ class PrintingLabelZpl2(models.Model):
                 record,
                 page_number=page_number,
                 page_count=page_count,
-                **extra
+                **extra,
             )
 
             # Restore printer's configuration and end the label
@@ -262,7 +262,7 @@ class PrintingLabelZpl2(models.Model):
                 "view_mode": "form",
                 "target": "new",
                 "binding_type": "action",
-                "context": "{'default_active_model_id': %s}" % model_id,
+                "context": f"{{'default_active_model_id': {model_id}}}",
             }
         )
 
@@ -296,10 +296,12 @@ class PrintingLabelZpl2(models.Model):
             ]
         )
         for model in models:
-            action = actions.filtered(lambda a: a.binding_model_id == model)
+            action = actions.filtered(
+                lambda a, model=model: a.binding_model_id == model
+            )
             if not action:
                 action = self.new_action(model.id)
-            for label in labels.filtered(lambda l: l.model_id == model):
+            for label in labels.filtered(lambda x, model=model: x.model_id == model):
                 label.action_window_id = action
         return True
 

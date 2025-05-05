@@ -284,8 +284,8 @@ class PrintingLabelZpl2Component(models.Model):
         if self.data_autofill:
             return self.autofill_data(record, eval_args)
         data = safe_eval(str(self.data), eval_args) or ""
-        if hasattr(self, "_postprocess_data_%s" % self.component_type):
-            data = getattr(self, "_postprocess_data_%s" % self.component_type)(
+        if hasattr(self, f"_postprocess_data_{self.component_type}"):
+            data = getattr(self, f"_postprocess_data_{self.component_type}")(
                 data, record, eval_args
             )
         return data
@@ -294,7 +294,7 @@ class PrintingLabelZpl2Component(models.Model):
         return self._generate_gs1_128_data(record)
 
     def _postprocess_data_qr_code(self, data, record, eval_args):
-        return "{}A,{}".format(self.error_correction, data)
+        return f"{self.error_correction}A,{data}"
 
     @api.model
     def autofill_data(self, record, eval_args):

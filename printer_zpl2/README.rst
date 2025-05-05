@@ -16,29 +16,24 @@ Printer ZPL II
 .. |badge2| image:: https://img.shields.io/badge/licence-AGPL--3-blue.png
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
-.. |badge3| image:: https://img.shields.io/badge/github-OCA%2Freport--print--send-lightgray.png?logo=github
-    :target: https://github.com/OCA/report-print-send/tree/16.0/printer_zpl2
-    :alt: OCA/report-print-send
-.. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/report-print-send-16-0/report-print-send-16-0-printer_zpl2
-    :alt: Translate me on Weblate
-.. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/report-print-send&target_branch=16.0
-    :alt: Try me on Runboat
+.. |badge3| image:: https://img.shields.io/badge/github-odoonz%2Fodoonz-lightgray.png?logo=github
+    :target: https://github.com/odoonz/odoonz/tree/18.0/printer_zpl2
+    :alt: odoonz/odoonz
 
-|badge1| |badge2| |badge3| |badge4| |badge5|
+|badge1| |badge2| |badge3|
 
-This module extends the **Report to printer** (``base_report_to_printer``)
-module to add a ZPL II label printing feature.
+This module extends the **Report to printer**
+(``base_report_to_printer``) module to add a ZPL II label printing
+feature.
 
-Key features include:
-* Design labels with components like text, barcodes, boxes, lines and images
-* Support for GS1-128 barcodes with configurable Application Identifiers (AIs)
-* Automatic data formatting according to GS1 specifications
-* Unit of measure conversion for weight-based AIs
+Key features include: \* Design labels with components like text,
+barcodes, boxes, lines and images \* Support for GS1-128 barcodes with
+configurable Application Identifiers (AIs) \* Automatic data formatting
+according to GS1 specifications \* Unit of measure conversion for
+weight-based AIs
 
-This module is meant to be used as a base for module development, and does not provide a GUI on its own.
-See below for more details.
+This module is meant to be used as a base for module development, and
+does not provide a GUI on its own. See below for more details.
 
 **Table of contents**
 
@@ -55,96 +50,133 @@ Configuration
 
 To configure this module, you need to:
 
-#. Go to *Settings > Printing > Labels > ZPL II*
-#. Create new labels
-#. Import ZPL2 code
-#. Use the Test Mode tab during the creation
+1. Go to *Settings > Printing > Labels > ZPL II*
+2. Create new labels
+3. Import ZPL2 code
+4. Use the Test Mode tab during the creation
 
 For GS1-128 barcodes, you can configure:
 
-* Supported Application Identifiers (AIs):
-    * (00) SSCC
-    * (01) GTIN
-    * (10) Batch/Lot Number
-    * (11) Production Date (YYMMDD)
-    * (13) Packaging Date (YYMMDD)
-    * (15) Best Before Date (YYMMDD)
-    * (17) Expiration Date (YYMMDD)
-    * (21) Serial Number
-    * (30) Count
-    * (310n) Net Weight (kg)
-    * (320n) Net Weight (lbs)
+- Supported Application Identifiers (AIs):
 
-* For each AI:
-    * Field path to get data from (e.g., "product_id.weight")
-    * For weight fields, UoM field path for automatic conversion
-    * Sequence order in the final barcode
-    * For weight AIs, number of decimal places (0-5)
+  - 
 
-It's also possible to add a label printing wizard on any model by creating a new *ir.actions.act_window* record.
-For example, to add the printing wizard on the *product.product* model ::
+    0) SSCC
 
-    <act_window id="action_wizard_purchase"
-      name="Print Label"
-      src_model="product.product"
-      res_model="wizard.print.record.label"
-      view_mode="form"
-      target="new"
-      key2="client_action_multi"/>
+  - 
+
+    1) GTIN
+
+  - 
+
+    10) Batch/Lot Number
+
+  - 
+
+    11) Production Date (YYMMDD)
+
+  - 
+
+    13) Packaging Date (YYMMDD)
+
+  - 
+
+    15) Best Before Date (YYMMDD)
+
+  - 
+
+    17) Expiration Date (YYMMDD)
+
+  - 
+
+    21) Serial Number
+
+  - 
+
+    30) Count
+
+  - (310n) Net Weight (kg)
+  - (320n) Net Weight (lbs)
+
+- For each AI:
+
+  - Field path to get data from (e.g., "product_id.weight")
+  - For weight fields, UoM field path for automatic conversion
+  - Sequence order in the final barcode
+  - For weight AIs, number of decimal places (0-5)
+
+It's also possible to add a label printing wizard on any model by
+creating a new *ir.actions.act_window* record. For example, to add the
+printing wizard on the *product.product* model :
+
+::
+
+   <act_window id="action_wizard_purchase"
+     name="Print Label"
+     src_model="product.product"
+     res_model="wizard.print.record.label"
+     view_mode="form"
+     target="new"
+     key2="client_action_multi"/>
 
 Usage
 =====
 
-To print a label, you need to call use the label printing method from anywhere (other modules, server actions, etc.).
+To print a label, you need to call use the label printing method from
+anywhere (other modules, server actions, etc.).
 
-Example : Print the label of a product ::
+Example : Print the label of a product :
 
-    self.env['printing.label.zpl2'].browse(label_id).print_label(
-        self.env['printing.printer'].browse(printer_id),
-        self.env['product.product'].browse(product_id))
+::
+
+   self.env['printing.label.zpl2'].browse(label_id).print_label(
+       self.env['printing.printer'].browse(printer_id),
+       self.env['product.product'].browse(product_id))
 
 For GS1-128 barcodes:
 
 1. Create a new label component
 2. Set the component type to "GS1-128"
 3. Add Application Identifiers with their configurations:
-   * Select the AI type (e.g., GTIN, Weight, Date)
-   * Set the field path to get the data from
-   * For weight fields, optionally set the UoM field path
-   * Set the sequence to control AI order
-   * For weight fields, set the decimal places
 
-The module will automatically:
-* Format the data according to GS1 specifications
-* Convert units of measure for weights
-* Combine multiple AIs with proper separators
-* Generate the final GS1-128 barcode
+   - Select the AI type (e.g., GTIN, Weight, Date)
+   - Set the field path to get the data from
+   - For weight fields, optionally set the UoM field path
+   - Set the sequence to control AI order
+   - For weight fields, set the decimal places
 
-You can also use the generic label printing wizard, if added on some models.
+The module will automatically: \* Format the data according to GS1
+specifications \* Convert units of measure for weights \* Combine
+multiple AIs with proper separators \* Generate the final GS1-128
+barcode
 
-.. image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
-   :alt: Try me on Runbot
+You can also use the generic label printing wizard, if added on some
+models.
+
+|Try me on Runbot|
+
+.. |Try me on Runbot| image:: https://odoo-community.org/website/image/ir.attachment/5784_f2813bd/datas
    :target: https://runbot.odoo-community.org/runbot/144/12.0
 
 Changelog
 =========
 
 13.0.1.0.0 (2019-09-30)
-~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
-* [RELEASE] Port from V12.
-* Selection lists do not support integers any longer
-* Binary field now returns False when empty instead of none,
-  change tests to reflect this
-* work around an appels vs oranges warning
+- [RELEASE] Port from V12.
+- Selection lists do not support integers any longer
+- Binary field now returns False when empty instead of none, change
+  tests to reflect this
+- work around an appels vs oranges warning
 
 Bug Tracker
 ===========
 
-Bugs are tracked on `GitHub Issues <https://github.com/OCA/report-print-send/issues>`_.
+Bugs are tracked on `GitHub Issues <https://github.com/odoonz/odoonz/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/report-print-send/issues/new?body=module:%20printer_zpl2%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/odoonz/odoonz/issues/new?body=module:%20printer_zpl2%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -152,37 +184,27 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * SUBTENO-IT
 * FLorent de Labarre
 * Apertoso NV
 
 Contributors
-~~~~~~~~~~~~
+------------
 
-* Sylvain Garancher <sylvain.garancher@syleam.fr>
-* Florent de Labarre
-* Jos De Graeve <Jos.DeGraeve@apertoso.be>
-* Rod Schouteden <rod.schouteden@dynapps.be>
-* Miquel Raïch <miquel.raich@forgeflow.com>
-* Lois Rilo <lois.rilo@forgeflow.com>
-* Tran Quoc Duong <duontq@trobz.com>
-* Graeme Gellatly <graeme@moahub.nz>
+- Sylvain Garancher <sylvain.garancher@syleam.fr>
+- Florent de Labarre
+- Jos De Graeve <Jos.DeGraeve@apertoso.be>
+- Rod Schouteden <rod.schouteden@dynapps.be>
+- Miquel Raïch <miquel.raich@forgeflow.com>
+- Lois Rilo <lois.rilo@forgeflow.com>
+- Tran Quoc Duong <duontq@trobz.com>
+- Graeme Gellatly <graeme@moahub.nz>
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
-This module is maintained by the OCA.
+This module is part of the `odoonz/odoonz <https://github.com/odoonz/odoonz/tree/18.0/printer_zpl2>`_ project on GitHub.
 
-.. image:: https://odoo-community.org/logo.png
-   :alt: Odoo Community Association
-   :target: https://odoo-community.org
-
-OCA, or the Odoo Community Association, is a nonprofit organization whose
-mission is to support the collaborative development of Odoo features and
-promote its widespread use.
-
-This module is part of the `OCA/report-print-send <https://github.com/OCA/report-print-send/tree/16.0/printer_zpl2>`_ project on GitHub.
-
-You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.
+You are welcome to contribute.

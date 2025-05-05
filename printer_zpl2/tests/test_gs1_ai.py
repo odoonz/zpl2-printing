@@ -155,7 +155,7 @@ class TestPrintingLabelZpl2Gs1AI(TransactionCase):
                 "type": "product",
                 "weight": 2.2,  # 2.2 lbs ≈ 1 kg
                 "uom_id": lb_uom.id,
-                "uom_po_id": lb_uom.id,  # Purchase UoM must be in same category as uom_id
+                "uom_po_id": lb_uom.id,
             }
         )
 

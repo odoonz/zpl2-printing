@@ -72,7 +72,8 @@ class PrintingLabelZpl2Gs1AI(models.Model):
                 if not field_def.type == "many2one":
                     raise ValidationError(
                         _(
-                            "Field %(field)s in path %(path)s is not a relational field",
+                            "Field %(field)s in path %(path)s is "
+                            "not a relational field",
                             field=field,
                             path=".".join(field_path),
                         )
