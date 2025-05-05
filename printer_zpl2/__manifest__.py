@@ -3,10 +3,10 @@
 
 {
     "name": "Printer ZPL II",
-    "version": "16.0.1.1.0",
+    "version": "18.0.1.0.0",
     "category": "Printer",
     "summary": "Add a ZPL II label printing feature",
-    "author": "SUBTENO-IT, FLorent de Labarre, "
+    "author": "SUBTENO-IT, FLorent de Labarre, Graeme Gellatly,"
     "Apertoso NV, Odoo Community Association (OCA)",
     "website": "https://github.com/odoonz/odoonz-addons",
     "license": "AGPL-3",

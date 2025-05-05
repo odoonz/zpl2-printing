@@ -91,7 +91,7 @@ class PrintingLabelZpl2(models.Model):
     @api.constrains("component_ids")
     def check_recursion(self):
         cr = self._cr
-        self.flush(["component_ids"])
+        self.flush_recordset(["component_ids"])
         query = (
             'SELECT "{}", "{}" FROM "{}" '
             'WHERE "{}" IN %s AND "{}" IS NOT NULL'.format(
@@ -393,9 +393,9 @@ class PrintingLabelZpl2(models.Model):
                     return base64.b64encode(imgByteArr.getvalue())
                 else:
                     _logger.warning(
-                        _("Error with Labelary API. %s") % response.status_code
+                        _("Error with Labelary API. %s").format(response.status_code)
                     )
 
             except Exception as e:
-                _logger.warning(_("Error with Labelary API. %s") % e)
+                _logger.warning(_("Error with Labelary API. %s").format(e))
         return False

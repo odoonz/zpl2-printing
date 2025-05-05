@@ -188,6 +188,7 @@ Authors
 
 * SUBTENO-IT
 * FLorent de Labarre
+* Graeme Gellatly
 * Apertoso NV
 
 Contributors
