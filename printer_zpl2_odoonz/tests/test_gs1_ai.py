@@ -31,7 +31,7 @@ class TestPrintingLabelZpl2Gs1AI(TransactionCase):
         self.product = self.env["product.product"].create(
             {
                 "name": "Test Product",
-                "type": "product",
+                "is_storable": True,
                 "default_code": "TEST001",
                 "barcode": "12345678",
                 "weight": 1.23,
@@ -152,7 +152,7 @@ class TestPrintingLabelZpl2Gs1AI(TransactionCase):
         product_lb = self.env["product.product"].create(
             {
                 "name": "Test Product (lb)",
-                "type": "product",
+                "is_storable": True,
                 "weight": 2.2,  # 2.2 lbs ≈ 1 kg
                 "uom_id": lb_uom.id,
                 "uom_po_id": lb_uom.id,
