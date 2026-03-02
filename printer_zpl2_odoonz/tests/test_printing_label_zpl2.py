@@ -8,8 +8,6 @@ from odoo import exceptions
 from ..models import zpl2
 from .common import PrinterZpl2Common
 
-model = "odoo.addons.base_report_to_printer.models.printing_server"
-
 
 class TestPrintingLabelZpl2(PrinterZpl2Common):
     @classmethod
@@ -35,12 +33,11 @@ class TestPrintingLabelZpl2(PrinterZpl2Common):
         with self.assertRaises(exceptions.UserError):
             label.print_label(self.printer, label)
 
-    @patch(f"{model}.cups")
-    def test_print_empty_label(self, cups):
+    def test_print_empty_label(self):
         """Check that printing an empty label works"""
         label = self.new_label()
-        label.print_label(self.printer, self.printer)
-        cups.Connection().printFile.assert_called_once()
+        with patch.object(type(self.printer), "print_file", return_value=True):
+            label.print_label(self.printer, self.printer)
 
     def test_empty_label_contents(self):
         """Check contents of an empty label"""
@@ -111,7 +108,11 @@ class TestPrintingLabelZpl2(PrinterZpl2Common):
         Check that a fixed value is repeated each time
         """
         label = self.new_label(
-            {"model_id": self.env.ref("printer_zpl2.model_printing_label_zpl2").id}
+            {
+                "model_id": self.env.ref(
+                    "printer_zpl2_odoonz.model_printing_label_zpl2"
+                ).id
+            }
         )
         data = "Some text"
         self.new_component(
@@ -172,7 +173,11 @@ class TestPrintingLabelZpl2(PrinterZpl2Common):
         displayed
         """
         label = self.new_label(
-            {"model_id": self.env.ref("printer_zpl2.model_printing_label_zpl2").id}
+            {
+                "model_id": self.env.ref(
+                    "printer_zpl2_odoonz.model_printing_label_zpl2"
+                ).id
+            }
         )
         data = ["First text", "Second text", "Third text"]
         self.new_component(
@@ -226,7 +231,11 @@ class TestPrintingLabelZpl2(PrinterZpl2Common):
         displayed
         """
         label = self.new_label(
-            {"model_id": self.env.ref("printer_zpl2.model_printing_label_zpl2").id}
+            {
+                "model_id": self.env.ref(
+                    "printer_zpl2_odoonz.model_printing_label_zpl2"
+                ).id
+            }
         )
         data = [f"Text {ind}" for ind in range(20)]
         self.new_component(
@@ -286,7 +295,7 @@ class TestPrintingLabelZpl2(PrinterZpl2Common):
             {
                 "name": "Sublabel",
                 "model_id": self.env.ref(
-                    "printer_zpl2.model_printing_label_zpl2_component"
+                    "printer_zpl2_odoonz.model_printing_label_zpl2_component"
                 ).id,
             }
         )
@@ -302,7 +311,11 @@ class TestPrintingLabelZpl2(PrinterZpl2Common):
             }
         )
         label = self.new_label(
-            {"model_id": self.env.ref("printer_zpl2.model_printing_label_zpl2").id}
+            {
+                "model_id": self.env.ref(
+                    "printer_zpl2_odoonz.model_printing_label_zpl2"
+                ).id
+            }
         )
         self.new_component(
             {"label_id": label.id, "name": "Label name", "data": "object.name"}

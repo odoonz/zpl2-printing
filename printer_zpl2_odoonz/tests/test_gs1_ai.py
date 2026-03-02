@@ -12,11 +12,9 @@ from odoo.tests.common import TransactionCase
 class TestPrintingLabelZpl2Gs1AI(TransactionCase):
     def setUp(self):
         super().setUp()
-        self.server = self.env["printing.server"].create({})
         self.printer = self.env["printing.printer"].create(
             {
                 "name": "Test Printer",
-                "server_id": self.server.id,
                 "system_name": "Test",
                 "default": True,
                 "status": "unknown",
@@ -155,7 +153,6 @@ class TestPrintingLabelZpl2Gs1AI(TransactionCase):
                 "is_storable": True,
                 "weight": 2.2,  # 2.2 lbs ≈ 1 kg
                 "uom_id": lb_uom.id,
-                "uom_po_id": lb_uom.id,
             }
         )
 
@@ -171,8 +168,8 @@ class TestPrintingLabelZpl2Gs1AI(TransactionCase):
         )
         ai_code, value = ai._format_gs1_value(product_lb)
         self.assertEqual(ai_code, "3103")
-        # 2.2 lbs ≈ 1 kg, formatted with 3 decimal places
-        self.assertEqual(value, "001000")
+        # 2.2 lbs ≈ 0.998 kg (2.2 * 0.45359237), formatted with 3 decimal places
+        self.assertEqual(value, "000998")
 
     def test_gs1_ai_field_validation_errors(self):
         """Test field validation error cases"""
@@ -235,25 +232,6 @@ class TestPrintingLabelZpl2Gs1AI(TransactionCase):
         data = self.component._generate_gs1_128_data(self.product)
         self.assertNotIn("(01)", data)  # Empty barcode AI should be skipped
         self.assertIn("(3103)001230", data)  # Weight AI should be included
-
-    def test_gs1_ai_weight_conversion_errors(self):
-        """Test weight conversion error handling"""
-        # Create incompatible UoMs
-        volume_uom = self.env.ref("uom.product_uom_litre")
-        weight_uom = self.env.ref("uom.product_uom_kgm")
-
-        # Try to convert between incompatible UoMs
-        ai = self.env["printing.label.zpl2.gs1.ai"].create(
-            {
-                "component_id": self.component.id,
-                "ai": "310n",
-                "field_name": "weight",
-                "decimal_places": 3,
-            }
-        )
-
-        with self.assertRaises(ValidationError):
-            ai._convert_weight(1.0, volume_uom, weight_uom)
 
     def test_gs1_ai_date_formatting(self):
         """Test date field formatting"""

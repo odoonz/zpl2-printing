@@ -90,7 +90,7 @@ class PrintingLabelZpl2(models.Model):
 
     @api.constrains("component_ids")
     def check_recursion(self):
-        cr = self._cr
+        cr = self.env.cr
         self.flush_recordset(["component_ids"])
         query = (
             'SELECT "{}", "{}" FROM "{}" '

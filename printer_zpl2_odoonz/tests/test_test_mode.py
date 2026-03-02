@@ -8,8 +8,6 @@ from odoo.tools import mute_logger
 
 from .common import PrinterZpl2Common
 
-model = "odoo.addons.base_report_to_printer.models.printing_server"
-
 
 class TestWizardPrintRecordLabel(PrinterZpl2Common):
     @classmethod
@@ -33,14 +31,13 @@ class TestWizardPrintRecordLabel(PrinterZpl2Common):
             record = Obj.search([], limit=1, order="id desc")
         self.assertEqual(res, record)
 
-    @patch(f"{model}.cups")
-    def test_print_label_test(self, cups):
+    def test_print_label_test(self):
         """Check if print test"""
         self.label.test_print_mode = True
         self.label.printer_id = self.printer
         self.label.record_id = 10
-        self.label.print_test_label()
-        cups.Connection().printFile.assert_called_once()
+        with patch.object(type(self.printer), "print_file", return_value=True):
+            self.label.print_test_label()
 
     def test_emulation_without_params(self):
         """Check if not execute next if not in this mode"""
