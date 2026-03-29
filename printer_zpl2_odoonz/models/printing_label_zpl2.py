@@ -392,10 +392,8 @@ class PrintingLabelZpl2(models.Model):
                     new_im.save(imgByteArr, format="PNG")
                     return base64.b64encode(imgByteArr.getvalue())
                 else:
-                    _logger.warning(
-                        _("Error with Labelary API. %s").format(response.status_code)
-                    )
+                    _logger.warning("Error with Labelary API. %s", response.status_code)
 
             except Exception as e:
-                _logger.warning(_("Error with Labelary API. %s").format(e))
+                _logger.warning("Error with Labelary API. %s", e)
         return False
